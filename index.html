@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Writing Exercise - Arrange the Words</title>
+
+<style>
+body{
+font-family:Arial,sans-serif;
+background:#f4f7fb;
+padding:20px;
+}
+
+.container{
+max-width:1000px;
+margin:auto;
+}
+
+h1{
+text-align:center;
+color:#0a66c2;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:15px;
+margin-bottom:20px;
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+.quiz-card{
+background:white;
+padding:20px;
+margin-bottom:20px;
+border-radius:15px;
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+.question{
+font-weight:bold;
+margin-bottom:10px;
+}
+
+.word-bank{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin-top:10px;
+margin-bottom:15px;
+}
+
+.word{
+background:#0a66c2;
+color:white;
+padding:8px 14px;
+border-radius:8px;
+cursor:pointer;
+user-select:none;
+}
+
+.word:hover{
+background:#084d93;
+}
+
+.answer-area{
+min-height:50px;
+border:2px dashed #bbb;
+padding:10px;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+.answer{
+display:none;
+font-weight:bold;
+margin-top:10px;
+}
+
+.correct{
+color:green;
+}
+
+.wrong{
+color:red;
+}
+
+button{
+padding:10px 20px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+.undo{
+background:#777;
+color:white;
+margin-bottom:10px;
+}
+
+.submit{
+display:block;
+margin:25px auto;
+background:#0a66c2;
+color:white;
+font-size:18px;
+}
+
+.result{
+display:none;
+background:white;
+padding:20px;
+border-radius:15px;
+text-align:center;
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+.score{
+font-size:45px;
+font-weight:bold;
+color:#0a66c2;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Writing Exercise</h1>
+
+<div class="card">
+
+<h3>📘 Arrange the Words</h3>
+
+<p>
+Rearrange the words to make a correct sentence.
+Click the words in the correct order.
+</p>
+
+</div>
+
+<div id="quizForm"></div>
+
+<button class="submit" onclick="checkAnswers()">
+Submit Answers
+</button>
+
+<div class="result" id="resultBox">
+<h2>Your Score</h2>
+<div class="score" id="score"></div>
+<p id="message"></p>
+</div>
+
+</div>
+
+<script>
+
+const questions = [
+
+{
+words:["every","school","I","go","day","to"],
+answer:"I go to school every day"
+},
+
+{
+words:["likes","reading","she","books"],
+answer:"She likes reading books"
+},
+
+{
+words:["football","they","play","every","weekend"],
+answer:"They play football every weekend"
+},
+
+{
+words:["breakfast","eats","he","morning","every"],
+answer:"He eats breakfast every morning"
+},
+
+{
+words:["English","study","we","at","school"],
+answer:"We study English at school"
+},
+
+{
+words:["cat","the","under","table","is","the"],
+answer:"The cat is under the table"
+},
+
+{
+words:["my","teacher","very","is","kind"],
+answer:"My teacher is very kind"
+},
+
+{
+words:["music","listening","enjoy","I","to"],
+answer:"I enjoy listening to music"
+},
+
+{
+words:["brother","my","basketball","plays"],
+answer:"My brother plays basketball"
+},
+
+{
+words:["library","the","in","students","are","the"],
+answer:"The students are in the library"
+},
+
+{
+words:["drinks","coffee","father","my","every","day"],
+answer:"My father drinks coffee every day"
+},
+
+{
+words:["beautiful","this","is","beach"],
+answer:"This beach is beautiful"
+},
+
+{
+words:["homework","their","doing","are","they"],
+answer:"They are doing their homework"
+},
+
+{
+words:["usually","dinner","we","together","have"],
+answer:"We usually have dinner together"
+},
+
+{
+words:["new","bought","she","a","laptop"],
+answer:"She bought a new laptop"
+}
+
+];
+
+const form = document.getElementById("quizForm");
+
+questions.forEach((q,index)=>{
+
+let shuffled = [...q.words].sort(()=>Math.random()-0.5);
+
+let wordsHTML = "";
+
+shuffled.forEach(word=>{
+
+wordsHTML += `
+<span class="word"
+onclick="addWord(${index},this)">
+${word}
+</span>
+`;
+
+});
+
+form.innerHTML += `
+
+<div class="quiz-card">
+
+<div class="question">
+${index+1}. Arrange the sentence:
+</div>
+
+<div class="answer-area"
+id="answerArea${index}">
+</div>
+
+<button
+class="undo"
+type="button"
+onclick="undoWord(${index})">
+Undo
+</button>
+
+<div class="word-bank">
+${wordsHTML}
+</div>
+
+<div
+class="answer"
+id="feedback${index}">
+</div>
+
+</div>
+
+`;
+
+});
+
+function addWord(index,element){
+
+const area =
+document.getElementById(
+`answerArea${index}`
+);
+
+area.innerHTML +=
+element.innerText + " ";
+
+element.style.visibility="hidden";
+
+}
+
+function undoWord(index){
+
+const area =
+document.getElementById(
+`answerArea${index}`
+);
+
+let words =
+area.innerText.trim().split(" ");
+
+if(words.length===0)return;
+
+let removed =
+words.pop();
+
+area.innerText =
+words.join(" ");
+
+document
+.querySelectorAll(
+`#quizForm .quiz-card:nth-child(${index+1}) .word`
+)
+.forEach(word=>{
+
+if(
+word.innerText===removed &&
+word.style.visibility==="hidden"
+){
+word.style.visibility="visible";
+}
+});
+
+}
+
+function normalize(text){
+
+return text
+.toLowerCase()
+.replace(/[.,!?]/g,"")
+.replace(/\s+/g," ")
+.trim();
+
+}
+
+function checkAnswers(){
+
+let score = 0;
+
+questions.forEach((q,index)=>{
+
+const userAnswer =
+normalize(
+document.getElementById(
+`answerArea${index}`
+).innerText
+);
+
+const correct =
+normalize(q.answer);
+
+const feedback =
+document.getElementById(
+`feedback${index}`
+);
+
+if(userAnswer===correct){
+
+score++;
+
+feedback.innerHTML =
+"✓ Correct";
+
+feedback.className =
+"answer correct";
+
+}else{
+
+feedback.innerHTML =
+`✗ Correct answer: ${q.answer}`;
+
+feedback.className =
+"answer wrong";
+
+}
+
+feedback.style.display =
+"block";
+
+});
+
+const percent =
+Math.round(
+score/questions.length*100
+);
+
+document.getElementById(
+"score"
+).innerHTML =
+`${score} / ${questions.length}`;
+
+let message="";
+
+if(percent>=90){
+message="🏆 Excellent!";
+}
+else if(percent>=70){
+message="🎓 Good Job!";
+}
+else if(percent>=50){
+message="📘 Keep Practicing!";
+}
+else{
+message="📚 Practice Sentence Writing Again!";
+}
+
+document.getElementById(
+"message"
+).innerHTML =
+`${percent}% - ${message}`;
+
+document.getElementById(
+"resultBox"
+).style.display="block";
+
+window.scrollTo({
+top:document.body.scrollHeight,
+behavior:"smooth"
+});
+
+}
+
+</script>
+
+</body>
+</html>
